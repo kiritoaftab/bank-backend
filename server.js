@@ -7,7 +7,8 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import morgan from "morgan";
 
-import { testConnection, sequelize } from "./config/dbConnection.js";
+import { testConnection } from "./config/dbConnection.js";
+import { sequelize } from "./models/index.js";
 
 const app = express();
 
@@ -24,6 +25,12 @@ app.get("/health", (req, res) => {
 // Start server only after DB connection
 async function startServer() {
   await testConnection();
+  await sequelize.authenticate();
+  console.log("✔ Database connection successful");
+
+  // Sync all models (creates tables if needed)
+  await sequelize.sync({ alter: true });
+  console.log("✔ All models synchronized");
 
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
