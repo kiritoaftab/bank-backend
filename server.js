@@ -9,6 +9,7 @@ import morgan from "morgan";
 
 import { testConnection } from "./config/dbConnection.js";
 import { sequelize } from "./models/index.js";
+import appRoutes from "./routes/index.js";
 
 const app = express();
 
@@ -22,11 +23,11 @@ app.get("/health", (req, res) => {
   res.json({ status: "OK", time: new Date() });
 });
 
+app.use("/api", appRoutes);
+
 // Start server only after DB connection
 async function startServer() {
   await testConnection();
-  await sequelize.authenticate();
-  console.log("✔ Database connection successful");
 
   // Sync all models (creates tables if needed)
   await sequelize.sync({ alter: true });
