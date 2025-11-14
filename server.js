@@ -29,8 +29,7 @@ app.use("/api", appRoutes);
 async function startServer() {
   await testConnection();
 
-  // Sync all models (creates tables if needed)
-  await sequelize.sync({ alter: true });
+  await sequelize.sync();
   console.log("✔ All models synchronized");
 
   const PORT = process.env.PORT || 3000;
