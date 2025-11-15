@@ -11,6 +11,7 @@ import { testConnection } from "./config/dbConnection.js";
 import { sequelize } from "./models/index.js";
 import appRoutes from "./routes/index.js";
 import https from "https";
+import fs from "fs";
 
 const app = express();
 
