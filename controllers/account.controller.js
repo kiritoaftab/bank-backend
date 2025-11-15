@@ -4,6 +4,7 @@ import {
   getAccountById,
   getAccountsByCustomer,
   getAllAccounts,
+  getAllAccountsByCustomer,
   updateAccount,
 } from "../services/account.service.js";
 
@@ -39,6 +40,15 @@ export async function getByCustomer(req, res) {
     console.log(req.params);
     const accounts = await getAccountsByCustomer(req.params.customerId);
     res.json({ accounts });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function getAccountsByCustomerAll(req, res) {
+  try {
+    const allAccounts = await getAllAccountsByCustomer(req.params.customerId);
+    res.json({ allAccounts });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

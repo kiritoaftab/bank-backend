@@ -1,4 +1,5 @@
 import { Account, Customer, User } from "../models/index.js";
+import { getLoansByCustomer } from "./loan.service.js";
 
 export async function createAccount(data) {
   const {
@@ -65,6 +66,15 @@ export async function getAccountsByCustomer(customerId) {
     include: [{ model: Customer, include: [{ model: User }] }],
   });
   return accounts;
+}
+
+export async function getAllAccountsByCustomer(customerId) {
+  const accounts = await Account.findAll({
+    where: { customer_id: customerId },
+    include: [{ model: Customer, include: [{ model: User }] }],
+  });
+  const loans = await getLoansByCustomer(customerId);
+  return [...accounts, ...loans];
 }
 
 export async function updateAccount(id, data) {

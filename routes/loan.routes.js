@@ -1,13 +1,12 @@
 import express from "express";
 import {
   create,
-  getAccountsByCustomerAll,
   getAll,
   getByCustomer,
   getOne,
   remove,
   update,
-} from "../controllers/account.controller.js";
+} from "../controllers/loan.controller.js";
 
 const router = express.Router();
 
@@ -15,7 +14,6 @@ router.post("/", create);
 router.get("/", getAll);
 router.get("/:id", getOne);
 router.get("/customer/:customerId", getByCustomer);
-router.get("/allAccountByCustomer/:customerId", getAccountsByCustomerAll);
 router.put("/:id", update);
 router.delete("/:id", remove);
 
