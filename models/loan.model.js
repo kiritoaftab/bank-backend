@@ -7,6 +7,11 @@ export default (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true,
       },
+      accountType: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+        defaultValue: "LOAN",
+      },
       accountNumber: { type: DataTypes.STRING(64), allowNull: false },
       accountCode: { type: DataTypes.STRING(50) },
       loanAmount: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
