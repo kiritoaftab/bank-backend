@@ -1,6 +1,7 @@
 import {
   createUser,
   deleteUser,
+  getAllStaff,
   getAllUsers,
   getUserById,
   updateUser,
@@ -18,6 +19,15 @@ export async function create(req, res) {
 export async function getAll(req, res) {
   try {
     const users = await getAllUsers();
+    res.json({ users });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function getStaffAll(req, res) {
+  try {
+    const users = await getAllStaff();
     res.json({ users });
   } catch (err) {
     res.status(400).json({ error: err.message });

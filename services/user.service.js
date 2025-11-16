@@ -30,6 +30,18 @@ export async function getAllUsers() {
   });
 }
 
+export async function getAllStaff() {
+  return User.findAll({
+    where: {
+      role: ["ADMIN", "MANAGER", "STAFF", "AGENT"], // IN clause
+    },
+    attributes: {
+      exclude: ["password"],
+    },
+    order: [["id", "ASC"]],
+  });
+}
+
 export async function getUserById(id) {
   const user = await User.findByPk(id, {
     attributes: { exclude: ["password"] },
