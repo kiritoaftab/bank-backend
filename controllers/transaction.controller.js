@@ -2,6 +2,7 @@ import {
   createTransaction,
   deleteTransaction,
   getAllTransactions,
+  getTransactionBetweenDatesForAgent,
   getTransactionByAccount,
   getTransactionByAgent,
   getTransactionByCustomer,
@@ -90,6 +91,24 @@ export async function remove(req, res) {
   try {
     const response = await deleteTransaction(req.params.id);
     res.json(response);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function txnHistoryByAgent(req, res) {
+  try {
+    const { agentId } = req.params;
+    const { startDate, endDate, page, pageSize } = req.query;
+    console.log(agentId, startDate, endDate, page, pageSize);
+    const transactions = await getTransactionBetweenDatesForAgent(
+      agentId,
+      startDate,
+      endDate,
+      page,
+      pageSize
+    );
+    res.json({ transactions });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

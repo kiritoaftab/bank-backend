@@ -207,3 +207,59 @@ export async function deleteTransaction(id) {
   await txn.destroy();
   return { message: "Transaction deleted successfully" };
 }
+
+export async function getTransactionBetweenDatesForAgent(
+  agentId,
+  startDate,
+  endDate,
+  page = 1,
+  pageSize = 10
+) {
+  try {
+    console.log(agentId, startDate, endDate, page, pageSize, "Service");
+    page = parseInt(page, 10) || 1;
+    pageSize = parseInt(pageSize, 10) || 10;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const limit = pageSize;
+    const offset = (page - 1) * pageSize;
+
+    const whereClause = {
+      agent_id: agentId,
+      createdAt: {
+        [Op.between]: [start, end],
+      },
+    };
+
+    const { rows: transactions, count: totalRecords } =
+      await Transaction.findAndCountAll({
+        where: whereClause,
+        limit,
+        offset,
+        order: [["createdAt", "DESC"]],
+        include: [
+          { model: Customer, include: [{ model: User }] },
+          { model: Agent, include: [{ model: User }] },
+          { model: Account },
+          { model: Loan },
+        ],
+      });
+
+    const totalPages = Math.ceil(totalRecords / pageSize);
+
+    return {
+      pagination: {
+        page,
+        pageSize,
+        totalPages,
+        totalRecords,
+      },
+      transactions,
+    };
+  } catch (err) {
+    console.log(err);
+    throw new Error("Failed to fetch transactions: " + err.message);
+  }
+}

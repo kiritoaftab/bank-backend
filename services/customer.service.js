@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import { Customer, User, Agent } from "../models/index.js";
+import { Op } from "sequelize";
 
 export async function createCustomer(data) {
   const {
@@ -128,4 +129,74 @@ export async function deleteCustomer(id) {
   await user.destroy();
 
   return { message: "Customer deleted successfully" };
+}
+
+export async function getCustomerByAgentId(agentId, page = 1, pageSize = 10) {
+  page = parseInt(page, 10) || 1;
+  pageSize = parseInt(pageSize, 10) || 10;
+
+  const limit = pageSize;
+  const offset = (page - 1) * pageSize;
+  console.log("fetching customers for agent id ", agentId);
+
+  const { rows: customers, count: totalRecords } =
+    await Customer.findAndCountAll({
+      limit: limit,
+      offset: offset,
+      where: { agent_id: agentId },
+      include: [
+        {
+          model: User,
+          attributes: ["id", "firstName", "lastName", "email", "phone", "role"],
+        },
+        {
+          model: Agent,
+          required: false,
+          include: [
+            {
+              model: User,
+              attributes: ["id", "firstName", "lastName", "phone"],
+            },
+          ],
+        },
+      ],
+      order: [["id", "ASC"]],
+    });
+
+  const totalPages = Math.ceil(totalRecords / pageSize);
+
+  return {
+    pagination: {
+      page,
+      pageSize,
+      totalPages,
+      totalRecords,
+    },
+    customers,
+  };
+}
+
+export async function getCustomerByAgentIdAndName(agentId, searchQuery) {
+  try {
+    const customers = await Customer.findAll({
+      where: { agent_id: agentId },
+      include: [
+        {
+          model: User,
+          attributes: ["id", "firstName", "lastName", "email", "phone", "role"],
+          where: {
+            [Op.or]: [
+              { firstName: { [Op.like]: `%${searchQuery}%` } },
+              { lastName: { [Op.like]: `%${searchQuery}%` } },
+            ],
+          },
+        },
+      ],
+      order: [["id", "ASC"]],
+    });
+
+    return customers;
+  } catch (err) {
+    throw new Error("Failed to fetch customers: " + err.message);
+  }
 }

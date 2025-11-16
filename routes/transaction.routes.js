@@ -8,6 +8,7 @@ import {
   getByLoan,
   getOne,
   remove,
+  txnHistoryByAgent,
   update,
 } from "../controllers/transaction.controller.js";
 
@@ -20,6 +21,7 @@ router.get("/customer/:customerId", getByCustomer);
 router.get("/agent/:agentId", getByAgent);
 router.get("/account/:accountId", getByAccount);
 router.get("/loan/:loanId", getByLoan);
+router.get("/history/:agentId", txnHistoryByAgent);
 router.put("/:id", update);
 router.delete("/:id", remove);
 

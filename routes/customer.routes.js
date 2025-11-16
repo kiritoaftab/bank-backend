@@ -6,14 +6,18 @@ import {
   update,
   remove,
   getByUser,
+  getByAgent,
+  getByAgentAndSeach,
 } from "../controllers/customer.controller.js";
 
 const router = express.Router();
 
 router.post("/", create);
 router.get("/", getAll);
+router.get("/search", getByAgentAndSeach);
 router.get("/:id", getOne);
 router.get("/user/:userId", getByUser);
+router.get("/agent/:agentId", getByAgent);
 router.put("/:id", update);
 router.delete("/:id", remove);
 
