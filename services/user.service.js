@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import { User } from "../models/index.js";
+import { Op } from "sequelize";
 
 export async function createUser(data) {
   const { firstName, lastName, email, phone, password, role } = data;
@@ -74,4 +75,24 @@ export async function deleteUser(id) {
 
   await user.destroy();
   return { message: "User deleted successfully" };
+}
+
+export async function getUserByName(searchQuery) {
+  try {
+    const users = await User.findAll({
+      where: {
+        role: { [Op.ne]: "CUSTOMER" },
+        [Op.or]: [
+          { firstName: { [Op.like]: `%${searchQuery}%` } },
+          { lastName: { [Op.like]: `%${searchQuery}%` } },
+          { phone: { [Op.like]: `%${searchQuery}%` } },
+        ],
+      },
+      order: [["firstName", "ASC"]],
+    });
+
+    return users;
+  } catch (err) {
+    throw new Error("Failed to fetch users: " + err.message);
+  }
 }

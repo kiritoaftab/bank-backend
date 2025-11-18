@@ -4,6 +4,7 @@ import {
   getAllStaff,
   getAllUsers,
   getUserById,
+  getUserByName,
   updateUser,
 } from "../services/user.service.js";
 
@@ -56,6 +57,16 @@ export async function remove(req, res) {
   try {
     const response = await deleteUser(req.params.id);
     res.json(response);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function getByName(req, res) {
+  try {
+    const { searchQuery } = req.query;
+    const users = await getUserByName(searchQuery);
+    res.json({ users });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
