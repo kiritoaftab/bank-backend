@@ -1,6 +1,7 @@
 import {
   createTransaction,
   deleteTransaction,
+  fetchTransactionRatioCollectedByAgent,
   getAllTransactions,
   getTransactionBetweenDatesForAgent,
   getTransactionByAccount,
@@ -110,6 +111,16 @@ export async function txnHistoryByAgent(req, res) {
     );
     res.json({ transactions });
   } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function txnRatioByAgent(req, res) {
+  try {
+    const { agentId } = req.params;
+    const response = await fetchTransactionRatioCollectedByAgent(agentId);
+    res.json({ response });
+  } catch (error) {
     res.status(400).json({ error: err.message });
   }
 }

@@ -268,3 +268,49 @@ export async function getTransactionBetweenDatesForAgent(
     throw new Error("Failed to fetch transactions: " + err.message);
   }
 }
+
+export async function fetchTransactionRatioCollectedByAgent(agentId) {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const todayTransactionCount = await Transaction.count({
+      where: {
+        agent_id: agentId,
+        createdAt: {
+          [Op.gte]: today,
+          [Op.lt]: tomorrow,
+        },
+      },
+    });
+
+    const customers = await Customer.findAll({
+      where: { agent_id: agentId },
+      attributes: ["id"],
+    });
+
+    const customerIds = customers.map((c) => c.id);
+
+    let totalAccounts = 0;
+
+    if (customerIds.length > 0) {
+      totalAccounts = await Account.count({
+        where: {
+          customer_id: {
+            [Op.in]: customerIds,
+          },
+        },
+      });
+    }
+    return {
+      agentId,
+      todayTransactionCount,
+      totalAccounts,
+    };
+  } catch (err) {
+    throw new Error("Failed to fetch agent transaction ratio: " + err.message);
+  }
+}
