@@ -247,6 +247,10 @@ export async function getTransactionBetweenDatesForAgent(
         ],
       });
 
+    const totalSum = await Transaction.sum("amount", {
+      where: whereClause,
+    });
+
     const totalPages = Math.ceil(totalRecords / pageSize);
 
     return {
@@ -256,6 +260,7 @@ export async function getTransactionBetweenDatesForAgent(
         totalPages,
         totalRecords,
       },
+      totalSum,
       transactions,
     };
   } catch (err) {
