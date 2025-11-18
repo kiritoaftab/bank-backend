@@ -1,3 +1,4 @@
+import { generateTransactionPdf } from "../services/receipt.service.js";
 import {
   createTransaction,
   deleteTransaction,
@@ -122,5 +123,16 @@ export async function txnRatioByAgent(req, res) {
     res.json({ response });
   } catch (error) {
     res.status(400).json({ error: err.message });
+  }
+}
+
+export async function generateTxnReceipt(req, res) {
+  try {
+    const { transactionId } = req.params;
+    const result = await generateTransactionPdf(transactionId);
+    res.json({ result });
+  } catch (error) {
+    console.log("Error while creating pdf", error);
+    res.status(400).json({ error: error.message });
   }
 }

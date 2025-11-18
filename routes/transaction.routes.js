@@ -1,6 +1,7 @@
 import express from "express";
 import {
   create,
+  generateTxnReceipt,
   getAll,
   getByAccount,
   getByAgent,
@@ -24,6 +25,7 @@ router.get("/account/:accountId", getByAccount);
 router.get("/loan/:loanId", getByLoan);
 router.get("/history/:agentId", txnHistoryByAgent);
 router.get("/transactionRatio/:agentId", txnRatioByAgent);
+router.get("/generateReceipt/:transactionId", generateTxnReceipt);
 router.put("/:id", update);
 router.delete("/:id", remove);
 
