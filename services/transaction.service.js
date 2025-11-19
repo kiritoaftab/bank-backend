@@ -8,6 +8,7 @@ import {
   Agent,
   User,
 } from "../models/index.js";
+import { Parser as Json2CsvParser } from "json2csv";
 
 export async function createTransaction(data) {
   const {
@@ -333,7 +334,6 @@ export async function getTransactionByQuery(searchQuery) {
             accountNumber: { [Op.like]: `%${searchQuery}%` },
           },
         },
-        // Optional includes if you want more data:
         {
           model: Customer,
           include: [{ model: User }],
@@ -349,5 +349,85 @@ export async function getTransactionByQuery(searchQuery) {
     return transactions;
   } catch (err) {
     throw new Error("Failed to fetch transactions: " + err.message);
+  }
+}
+
+async function getCsvRows(txns) {
+  const rows = txns.map((t) => ({
+    // Transaction fields
+    transaction_id: t.id,
+    amount: t.amount,
+    mode: t.mode,
+    createdAt: t.createdAt,
+    updatedAt: t.updatedAt,
+
+    // Customer fields
+    customer_id: t.customer_id,
+    customer_firstName: t.Customer?.User?.firstName || "",
+    customer_lastName: t.Customer?.User?.lastName || "",
+    customer_phone: t.Customer?.User?.phone || "",
+    customer_email: t.Customer?.User?.email || "",
+
+    // Agent fields
+    agent_id: t.agent_id,
+    agent_firstName: t.Agent?.User?.firstName || "",
+    agent_lastName: t.Agent?.User?.lastName || "",
+    agent_phone: t.Agent?.User?.phone || "",
+
+    // Account fields (if exists)
+    account_id: t.account_id || "",
+    account_number: t.Account?.accountNumber || "",
+    account_type: t.Account?.accountType || "",
+    account_balance: t.Account?.balance || "",
+    account_code: t.Account?.accountCode || "",
+
+    // Loan fields (if exists)
+    loan_id: t.loan_id || "",
+    loan_accountNumber: t.Loan?.accountNumber || "",
+    loan_amount: t.Loan?.loanAmount || "",
+    loan_pendingDue: t.Loan?.pendingDue || "",
+    loan_prevDue: t.Loan?.prevDue || "",
+  }));
+  return rows;
+}
+
+export async function generateOverallTransactionReport(startDate, endDate) {
+  try {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const txns = await Transaction.findAll({
+      where: {
+        createdAt: {
+          [Op.between]: [start, end],
+        },
+      },
+      include: [
+        {
+          model: Customer,
+          include: [{ model: User }],
+        },
+        {
+          model: Agent,
+          include: [{ model: User }],
+        },
+        { model: Account },
+        { model: Loan },
+      ],
+      order: [["createdAt", "ASC"]],
+    });
+    console.log("Transactions fetched for report:", txns.length);
+
+    // Transform into a flat structure for CSV
+    const rows = await getCsvRows(txns);
+    console.log("Rows prepared for CSV:", rows);
+    // Create CSV
+    const parser = new Json2CsvParser({ header: true });
+    const csv = parser.parse(rows);
+
+    return csv; // You can write to file or upload to Azure
+  } catch (err) {
+    throw new Error("Failed to generate report: " + err.message);
   }
 }

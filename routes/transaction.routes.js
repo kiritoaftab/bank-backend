@@ -8,6 +8,7 @@ import {
   getByCustomer,
   getByLoan,
   getOne,
+  getOverallTxnReport,
   getTransactionBySearch,
   remove,
   txnHistoryByAgent,
@@ -28,6 +29,7 @@ router.get("/loan/:loanId", getByLoan);
 router.get("/history/:agentId", txnHistoryByAgent);
 router.get("/transactionRatio/:agentId", txnRatioByAgent);
 router.get("/generateReceipt/:transactionId", generateTxnReceipt);
+router.get("/report/overallTransaction", getOverallTxnReport);
 router.put("/:id", update);
 router.delete("/:id", remove);
 

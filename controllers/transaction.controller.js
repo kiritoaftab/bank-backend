@@ -3,6 +3,7 @@ import {
   createTransaction,
   deleteTransaction,
   fetchTransactionRatioCollectedByAgent,
+  generateOverallTransactionReport,
   getAllTransactions,
   getTransactionBetweenDatesForAgent,
   getTransactionByAccount,
@@ -143,6 +144,25 @@ export async function getTransactionBySearch(req, res) {
     const transactions = await getTransactionByQuery(req.query.searchQuery);
     res.json({ transactions });
   } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getOverallTxnReport(req, res) {
+  try {
+    const { startDate, endDate } = req.query;
+
+    const csv = await generateOverallTransactionReport(startDate, endDate);
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="transaction_report_${Date.now()}.csv"`
+    );
+
+    return res.send(csv);
+  } catch (error) {
+    console.log("Error while creating overall report", error);
     res.status(400).json({ error: error.message });
   }
 }
