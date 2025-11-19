@@ -525,21 +525,26 @@ export async function generateReportByAccountNumber(
 
     const txns = await Transaction.findAll({
       where: {
-        createdAt: {
-          [Op.between]: [start, end],
-        },
+        [Op.and]: [
+          { createdAt: { [Op.between]: [start, end] } },
+          {
+            [Op.or]: [
+              sequelize.where(
+                sequelize.col("Account.accountNumber"),
+                accountNumber
+              ),
+              sequelize.where(
+                sequelize.col("Loan.accountNumber"),
+                accountNumber
+              ),
+            ],
+          },
+        ],
       },
+
       include: [
-        {
-          model: Account,
-          required: false,
-          where: { accountNumber: accountNumber },
-        },
-        {
-          model: Loan,
-          required: false,
-          where: { accountNumber: accountNumber },
-        },
+        { model: Account },
+        { model: Loan },
         {
           model: Customer,
           include: [{ model: User }],
@@ -549,6 +554,7 @@ export async function generateReportByAccountNumber(
           include: [{ model: User }],
         },
       ],
+
       order: [["createdAt", "ASC"]],
     });
 
