@@ -4,6 +4,9 @@ import {
   deleteTransaction,
   fetchTransactionRatioCollectedByAgent,
   generateOverallTransactionReport,
+  generateReportByAccountNumber,
+  generateReportByAgent,
+  generateReportByCustomer,
   getAllTransactions,
   getTransactionBetweenDatesForAgent,
   getTransactionByAccount,
@@ -153,6 +156,67 @@ export async function getOverallTxnReport(req, res) {
     const { startDate, endDate } = req.query;
 
     const csv = await generateOverallTransactionReport(startDate, endDate);
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="transaction_report_${Date.now()}.csv"`
+    );
+
+    return res.send(csv);
+  } catch (error) {
+    console.log("Error while creating overall report", error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getTxnReportByAgent(req, res) {
+  try {
+    const { startDate, endDate, agentId } = req.query;
+
+    const csv = await generateReportByAgent(agentId, startDate, endDate);
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="transaction_report_${Date.now()}.csv"`
+    );
+
+    return res.send(csv);
+  } catch (error) {
+    console.log("Error while creating overall report", error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getTxnReportByCustomer(req, res) {
+  try {
+    const { startDate, endDate, customerId } = req.query;
+
+    const csv = await generateReportByCustomer(customerId, startDate, endDate);
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="transaction_report_${Date.now()}.csv"`
+    );
+
+    return res.send(csv);
+  } catch (error) {
+    console.log("Error while creating overall report", error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getTxnReportByAccountNumber(req, res) {
+  try {
+    const { startDate, endDate, accountNumber } = req.query;
+
+    const csv = await generateReportByAccountNumber(
+      accountNumber,
+      startDate,
+      endDate
+    );
 
     res.setHeader("Content-Type", "text/csv");
     res.setHeader(

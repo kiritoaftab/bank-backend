@@ -421,12 +421,145 @@ export async function generateOverallTransactionReport(startDate, endDate) {
 
     // Transform into a flat structure for CSV
     const rows = await getCsvRows(txns);
-    console.log("Rows prepared for CSV:", rows);
     // Create CSV
     const parser = new Json2CsvParser({ header: true });
     const csv = parser.parse(rows);
 
     return csv; // You can write to file or upload to Azure
+  } catch (err) {
+    throw new Error("Failed to generate report: " + err.message);
+  }
+}
+
+export async function generateReportByAgent(agentId, startDate, endDate) {
+  try {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const txns = await Transaction.findAll({
+      where: {
+        agent_id: agentId,
+        createdAt: {
+          [Op.between]: [start, end],
+        },
+      },
+      include: [
+        {
+          model: Customer,
+          include: [{ model: User }],
+        },
+        {
+          model: Agent,
+          include: [{ model: User }],
+        },
+        { model: Account },
+        { model: Loan },
+      ],
+      order: [["createdAt", "ASC"]],
+    });
+    console.log("Transactions fetched for report:", txns.length);
+
+    // Transform into a flat structure for CSV
+    const rows = await getCsvRows(txns);
+    // Create CSV
+    const parser = new Json2CsvParser({ header: true });
+    const csv = parser.parse(rows);
+
+    return csv; // You can write to file or upload to Azure
+  } catch (err) {
+    throw new Error("Failed to generate report: " + err.message);
+  }
+}
+
+export async function generateReportByCustomer(customerId, startDate, endDate) {
+  try {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const txns = await Transaction.findAll({
+      where: {
+        customer_id: customerId,
+        createdAt: {
+          [Op.between]: [start, end],
+        },
+      },
+      include: [
+        {
+          model: Customer,
+          include: [{ model: User }],
+        },
+        {
+          model: Agent,
+          include: [{ model: User }],
+        },
+        { model: Account },
+        { model: Loan },
+      ],
+      order: [["createdAt", "ASC"]],
+    });
+    console.log("Transactions fetched for report:", txns.length);
+
+    // Transform into a flat structure for CSV
+    const rows = await getCsvRows(txns);
+    // Create CSV
+    const parser = new Json2CsvParser({ header: true });
+    const csv = parser.parse(rows);
+
+    return csv; // You can write to file or upload to Azure
+  } catch (err) {
+    throw new Error("Failed to generate report: " + err.message);
+  }
+}
+
+export async function generateReportByAccountNumber(
+  accountNumber,
+  startDate,
+  endDate
+) {
+  try {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const txns = await Transaction.findAll({
+      where: {
+        createdAt: {
+          [Op.between]: [start, end],
+        },
+      },
+      include: [
+        {
+          model: Account,
+          required: false,
+          where: { accountNumber: accountNumber },
+        },
+        {
+          model: Loan,
+          required: false,
+          where: { accountNumber: accountNumber },
+        },
+        {
+          model: Customer,
+          include: [{ model: User }],
+        },
+        {
+          model: Agent,
+          include: [{ model: User }],
+        },
+      ],
+      order: [["createdAt", "ASC"]],
+    });
+
+    console.log("Transactions fetched for report:", txns.length);
+
+    const rows = await getCsvRows(txns);
+
+    const parser = new Json2CsvParser({ header: true });
+    const csv = parser.parse(rows);
+
+    return csv;
   } catch (err) {
     throw new Error("Failed to generate report: " + err.message);
   }

@@ -10,6 +10,9 @@ import {
   getOne,
   getOverallTxnReport,
   getTransactionBySearch,
+  getTxnReportByAccountNumber,
+  getTxnReportByAgent,
+  getTxnReportByCustomer,
   remove,
   txnHistoryByAgent,
   txnRatioByAgent,
@@ -30,6 +33,9 @@ router.get("/history/:agentId", txnHistoryByAgent);
 router.get("/transactionRatio/:agentId", txnRatioByAgent);
 router.get("/generateReceipt/:transactionId", generateTxnReceipt);
 router.get("/report/overallTransaction", getOverallTxnReport);
+router.get("/report/reportByAgent", getTxnReportByAgent);
+router.get("/report/reportByCustomer", getTxnReportByCustomer);
+router.get("/report/reportByAccount", getTxnReportByAccountNumber);
 router.put("/:id", update);
 router.delete("/:id", remove);
 
