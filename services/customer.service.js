@@ -200,3 +200,26 @@ export async function getCustomerByAgentIdAndName(agentId, searchQuery) {
     throw new Error("Failed to fetch customers: " + err.message);
   }
 }
+
+export async function getCustomerByQuery(searchQuery) {
+  try {
+    const customers = await Customer.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["id", "firstName", "lastName", "email", "phone", "role"],
+          where: {
+            [Op.or]: [
+              { firstName: { [Op.like]: `%${searchQuery}%` } },
+              { lastName: { [Op.like]: `%${searchQuery}%` } },
+              { phone: { [Op.like]: `%${searchQuery}%` } },
+            ],
+          },
+        },
+      ],
+      order: [["id", "ASC"]],
+    });
+  } catch (err) {
+    throw new Error("Failed to fetch customers: " + err.message);
+  }
+}

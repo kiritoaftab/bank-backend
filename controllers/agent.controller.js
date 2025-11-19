@@ -5,6 +5,7 @@ import {
   updateAgent,
   deleteAgent,
   getAgentByUserId,
+  getAgentByQuery,
 } from "../services/agent.service.js";
 
 export async function create(req, res) {
@@ -56,6 +57,16 @@ export async function remove(req, res) {
   try {
     const response = await deleteAgent(req.params.id);
     res.json(response);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function getBySearch(req, res) {
+  try {
+    const { searchQuery } = req.query;
+    const agents = await getAgentByQuery(searchQuery);
+    res.json({ agents });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

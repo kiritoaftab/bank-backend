@@ -8,6 +8,7 @@ import {
   getByUser,
   getByAgent,
   getByAgentAndSeach,
+  getBySearch,
 } from "../controllers/customer.controller.js";
 
 const router = express.Router();
@@ -15,6 +16,7 @@ const router = express.Router();
 router.post("/", create);
 router.get("/", getAll);
 router.get("/search", getByAgentAndSeach);
+router.get("/searchQuery", getBySearch);
 router.get("/:id", getOne);
 router.get("/user/:userId", getByUser);
 router.get("/agent/:agentId", getByAgent);

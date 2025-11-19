@@ -7,6 +7,7 @@ import {
   deleteCustomer,
   getCustomerByAgentId,
   getCustomerByAgentIdAndName,
+  getCustomerByQuery,
 } from "../services/customer.service.js";
 
 export async function create(req, res) {
@@ -81,6 +82,16 @@ export async function getByAgentAndSeach(req, res) {
   try {
     const { searchQuery, agentId } = req.query;
     const customers = await getCustomerByAgentIdAndName(agentId, searchQuery);
+    res.json({ customers });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function getBySearch(req, res) {
+  try {
+    const { searchQuery } = req.query;
+    const customers = await getCustomerByQuery(searchQuery);
     res.json({ customers });
   } catch (err) {
     res.status(400).json({ error: err.message });

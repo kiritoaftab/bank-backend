@@ -100,3 +100,26 @@ export async function deleteAgent(id) {
 
   return { message: "Agent deleted" };
 }
+
+export async function getAgentByQuery(searchQuery) {
+  try {
+    const agents = await Agent.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["id", "firstName", "lastName", "email", "phone", "role"],
+          where: {
+            [Op.or]: [
+              { firstName: { [Op.like]: `%${searchQuery}%` } },
+              { lastName: { [Op.like]: `%${searchQuery}%` } },
+              { phone: { [Op.like]: `%${searchQuery}%` } },
+            ],
+          },
+        },
+      ],
+      order: [["id", "ASC"]],
+    });
+  } catch (err) {
+    throw new Error("Failed to fetch agents: " + err.message);
+  }
+}
