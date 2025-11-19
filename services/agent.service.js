@@ -1,6 +1,7 @@
 // services/agent.service.js
 import bcrypt from "bcrypt";
 import { Agent, User } from "../models/index.js";
+import { Op } from "sequelize";
 
 export async function createAgent(data) {
   const {
