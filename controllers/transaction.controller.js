@@ -10,6 +10,7 @@ import {
   getTransactionByCustomer,
   getTransactionById,
   getTransactionByLoan,
+  getTransactionByQuery,
   updateTransaction,
 } from "../services/transaction.service.js";
 
@@ -133,6 +134,15 @@ export async function generateTxnReceipt(req, res) {
     res.json({ result });
   } catch (error) {
     console.log("Error while creating pdf", error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getTransactionBySearch(req, res) {
+  try {
+    const transactions = await getTransactionByQuery(req.query.searchQuery);
+    res.json({ transactions });
+  } catch (error) {
     res.status(400).json({ error: error.message });
   }
 }

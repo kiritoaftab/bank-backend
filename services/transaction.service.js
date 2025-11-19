@@ -314,3 +314,40 @@ export async function fetchTransactionRatioCollectedByAgent(agentId) {
     throw new Error("Failed to fetch agent transaction ratio: " + err.message);
   }
 }
+
+export async function getTransactionByQuery(searchQuery) {
+  try {
+    const transactions = await Transaction.findAll({
+      include: [
+        {
+          model: Account,
+          required: false,
+          where: {
+            accountNumber: { [Op.like]: `%${searchQuery}%` },
+          },
+        },
+        {
+          model: Loan,
+          required: false,
+          where: {
+            accountNumber: { [Op.like]: `%${searchQuery}%` },
+          },
+        },
+        // Optional includes if you want more data:
+        {
+          model: Customer,
+          include: [{ model: User }],
+        },
+        {
+          model: Agent,
+          include: [{ model: User }],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+
+    return transactions;
+  } catch (err) {
+    throw new Error("Failed to fetch transactions: " + err.message);
+  }
+}

@@ -8,6 +8,7 @@ import {
   getByCustomer,
   getByLoan,
   getOne,
+  getTransactionBySearch,
   remove,
   txnHistoryByAgent,
   txnRatioByAgent,
@@ -18,6 +19,7 @@ const router = express.Router();
 
 router.post("/", create);
 router.get("/", getAll);
+router.get("/searchQuery", getTransactionBySearch);
 router.get("/:id", getOne);
 router.get("/customer/:customerId", getByCustomer);
 router.get("/agent/:agentId", getByAgent);
