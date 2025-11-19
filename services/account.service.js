@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { Account, Customer, User } from "../models/index.js";
 import { getLoansByCustomer } from "./loan.service.js";
 
@@ -91,4 +92,20 @@ export async function deleteAccount(id) {
 
   await account.destroy();
   return { message: "Account deleted successfully" };
+}
+
+export async function getAccountByQuery(searchQuery) {
+  try {
+    const accounts = await Account.findAll({
+      where: {
+        accountNumber: {
+          [Op.like]: `%${searchQuery}%`,
+        },
+      },
+    });
+
+    return accounts;
+  } catch (err) {
+    throw new Error("Failed to fetch accounts: " + err.message);
+  }
 }

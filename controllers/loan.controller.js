@@ -5,6 +5,7 @@ import {
   getLoansByCustomer,
   updateLoan,
   deleteLoan,
+  getLoanByQuery,
 } from "../services/loan.service.js";
 
 export async function create(req, res) {
@@ -57,6 +58,15 @@ export async function remove(req, res) {
   try {
     const response = await deleteLoan(req.params.id);
     res.json(response);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function getLoansBySearch(req, res) {
+  try {
+    const loans = await getLoanByQuery(req.query.searchQuery);
+    res.json({ loans });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

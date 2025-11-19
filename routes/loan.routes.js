@@ -3,6 +3,7 @@ import {
   create,
   getAll,
   getByCustomer,
+  getLoansBySearch,
   getOne,
   remove,
   update,
@@ -12,6 +13,7 @@ const router = express.Router();
 
 router.post("/", create);
 router.get("/", getAll);
+router.get("/searchQuery", getLoansBySearch);
 router.get("/:id", getOne);
 router.get("/customer/:customerId", getByCustomer);
 router.put("/:id", update);

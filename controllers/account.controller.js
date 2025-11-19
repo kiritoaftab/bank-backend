@@ -2,6 +2,7 @@ import {
   createAccount,
   deleteAccount,
   getAccountById,
+  getAccountByQuery,
   getAccountsByCustomer,
   getAllAccounts,
   getAllAccountsByCustomer,
@@ -67,6 +68,15 @@ export async function remove(req, res) {
   try {
     const response = await deleteAccount(req.params.id);
     res.json(response);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+export async function getAccountsBySearch(req, res) {
+  try {
+    const accounts = await getAccountByQuery(req.query.searchQuery);
+    res.json({ accounts });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

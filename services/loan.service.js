@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { Loan, Customer, User } from "../models/index.js";
 
 export async function createLoan(data) {
@@ -89,4 +90,20 @@ export async function deleteLoan(id) {
   await loan.destroy();
 
   return { message: "Loan deleted successfully" };
+}
+
+export async function getLoanByQuery(searchQuery) {
+  try {
+    const loans = await Loan.findAll({
+      where: {
+        accountNumber: {
+          [Op.like]: `%${searchQuery}%`,
+        },
+      },
+    });
+
+    return loans;
+  } catch (err) {
+    throw new Error("Failed to fetch loans: " + err.message);
+  }
 }
