@@ -119,6 +119,7 @@ export async function getAgentByQuery(searchQuery) {
       ],
       order: [["id", "ASC"]],
     });
+    return agents;
   } catch (err) {
     throw new Error("Failed to fetch agents: " + err.message);
   }

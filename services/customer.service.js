@@ -219,6 +219,7 @@ export async function getCustomerByQuery(searchQuery) {
       ],
       order: [["id", "ASC"]],
     });
+    return customers;
   } catch (err) {
     throw new Error("Failed to fetch customers: " + err.message);
   }
